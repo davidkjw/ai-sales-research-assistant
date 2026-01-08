@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sales Research Assistant - Local (Ollama)</title>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // SVG Icons
+        const Search = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+        );
+        
+        const Mail = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+            </svg>
+        );
+        
+        const TrendingUp = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                <polyline points="16 7 22 7 22 13"></polyline>
+            </svg>
+        );
+        
+        const FileText = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <line x1="10" y1="9" x2="8" y2="9"></line>
+            </svg>
+        );
+        
+        const Loader2 = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+            </svg>
+        );
+        
+        const Building2 = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
+                <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+                <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
+                <path d="M10 6h4"></path>
+                <path d="M10 10h4"></path>
+                <path d="M10 14h4"></path>
+                <path d="M10 18h4"></path>
+            </svg>
+        );
+        
+        const Users = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+        );
+        
+        const DollarSign = () => (
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+        );
+
+        const CheckCircle = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        );
+
+        const AlertCircle = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        );
+
+        const Download = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+        );
+
+        function SalesResearchTool() {
+            const [activeTab, setActiveTab] = useState('prospect');
+            const [loading, setLoading] = useState(false);
+            const [result, setResult] = useState('');
+            const [error, setError] = useState('');
+            const [ollamaStatus, setOllamaStatus] = useState('checking');
+            const [selectedModel, setSelectedModel] = useState('llama3.2');
+            const [availableModels, setAvailableModels] = useState([]);
+
+            const [companyName, setCompanyName] = useState('');
+            const [companyUrl, setCompanyUrl] = useState('');
+            
+            const [prospectInfo, setProspectInfo] = useState('');
+            const [emailPurpose, setEmailPurpose] = useState('');
+            const [productService, setProductService] = useState('');
+            
+            const [competitors, setCompetitors] = useState('');
+            const [yourProduct, setYourProduct] = useState('');
+
+            // Check Ollama connection and get models
+            useEffect(() => {
+                checkOllamaConnection();
+            }, []);
+
+            const checkOllamaConnection = async () => {
+                try {
+                    const response = await fetch('http://localhost:11434/api/tags');
+                    if (response.ok) {
+                        const data = await response.json();
+                        setAvailableModels(data.models || []);
+                        if (data.models && data.models.length > 0) {
+                            setSelectedModel(data.models[0].name);
+                        }
+                        setOllamaStatus('connected');
+                    } else {
+                        setOllamaStatus('error');
+                    }
+                } catch (err) {
+                    setOllamaStatus('error');
+                }
+            };
+
+            const callOllama = async (prompt) => {
+                const response = await fetch('http://localhost:11434/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: selectedModel,
+                        prompt: prompt,
+                        stream: false
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get response from Ollama');
+                }
+
+                const data = await response.json();
+                return data.response;
+            };
+
+            const handleProspectResearch = async () => {
+                if (!companyName && !companyUrl) {
+                    setError('Please provide either a company name or URL');
+                    return;
+                }
+
+                setLoading(true);
+                setError('');
+                setResult('');
+
+                try {
+                    const prompt = `You are a sales research assistant. Research and provide insights about the following company:
+
+Company: ${companyName}
+${companyUrl ? `Website: ${companyUrl}` : ''}
+
+Provide a comprehensive sales intelligence brief with:
+1. Company Overview (industry, size, key products/services)
+2. Potential Decision Makers (roles to target in sales)
+3. Common Pain Points (challenges this type of company faces)
+4. Sales Approach Recommendations
+
+Format the response clearly for a busy salesperson. Be specific and actionable.`;
+
+                    const response = await callOllama(prompt);
+                    setResult(response);
+                } catch (err) {
+                    setError('Failed to generate research. Make sure Ollama is running.');
+                    console.error(err);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleEmailDraft = async () => {
+                if (!prospectInfo || !emailPurpose) {
+                    setError('Please provide prospect information and email purpose');
+                    return;
+                }
+
+                setLoading(true);
+                setError('');
+                setResult('');
+
+                try {
+                    const prompt = `You are an expert sales email writer. Draft a personalized, compelling sales email based on the following:
+
+Prospect Information: ${prospectInfo}
+Email Purpose: ${emailPurpose}
+${productService ? `Product/Service: ${productService}` : ''}
+
+Requirements:
+- Keep it concise (under 150 words)
+- Personalized and relevant to the prospect
+- Clear value proposition
+- Strong call-to-action
+- Professional but conversational tone
+- Include a subject line
+
+Provide:
+1. Subject Line
+2. Email Body
+3. Brief explanation of why this approach works`;
+
+                    const response = await callOllama(prompt);
+                    setResult(response);
+                } catch (err) {
+                    setError('Failed to generate email. Make sure Ollama is running.');
+                    console.error(err);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleCompetitiveAnalysis = async () => {
+                if (!competitors || !yourProduct) {
+                    setError('Please provide competitor names and your product information');
+                    return;
+                }
+
+                setLoading(true);
+                setError('');
+                setResult('');
+
+                try {
+                    const prompt = `You are a competitive intelligence analyst for sales teams. Analyze the following:
+
+Our Product/Service: ${yourProduct}
+Competitors: ${competitors}
+
+Provide:
+1. Competitive Positioning Matrix (key strengths/weaknesses)
+2. Our Key Differentiators (why customers should choose us)
+3. Competitor Vulnerabilities (where we can win)
+4. Battle Cards (how to handle objections about competitors)
+5. Sales Talk Tracks (specific phrases to use in conversations)
+
+Format this as a practical sales enablement resource.`;
+
+                    const response = await callOllama(prompt);
+                    setResult(response);
+                } catch (err) {
+                    setError('Failed to generate analysis. Make sure Ollama is running.');
+                    console.error(err);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const copyToClipboard = () => {
+                navigator.clipboard.writeText(result);
+                alert('Copied to clipboard!');
+            };
+
+            if (ollamaStatus === 'error') {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
+                        <div className="bg-white rounded-xl shadow-2xl p-8 max-w-2xl w-full">
+                            <div className="flex items-center justify-center mb-6 text-red-600">
+                                <AlertCircle />
+                                <h2 className="text-2xl font-bold text-gray-900 ml-2">Ollama Not Found</h2>
+                            </div>
+                            
+                            <p className="text-gray-700 mb-6 text-lg">
+                                This app runs completely free on your computer using Ollama. Follow these steps to get started:
+                            </p>
+
+                            <div className="space-y-4 mb-6">
+                                <div className="bg-blue-50 p-4 rounded-lg">
+                                    <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                        <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">1</span>
+                                        Install Ollama
+                                    </h3>
+                                    <p className="text-gray-700 ml-8">
+                                        Download from: <a href="https://ollama.ai" target="_blank" className="text-blue-600 hover:underline font-medium">https://ollama.ai</a>
+                                    </p>
+                                    <p className="text-gray-600 text-sm ml-8 mt-1">(Available for Windows, Mac, and Linux)</p>
+                                </div>
+
+                                <div className="bg-green-50 p-4 rounded-lg">
+                                    <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                        <span className="bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">2</span>
+                                        Download a Model
+                                    </h3>
+                                    <p className="text-gray-700 ml-8 mb-2">Open your terminal and run:</p>
+                                    <code className="block bg-gray-900 text-green-400 p-3 rounded ml-8 font-mono text-sm">
+                                        ollama pull llama3.2
+                                    </code>
+                                    <p className="text-gray-600 text-sm ml-8 mt-2">
+                                        Recommended models: llama3.2 (small & fast), llama3.1 (more capable), mistral
+                                    </p>
+                                </div>
+
+                                <div className="bg-purple-50 p-4 rounded-lg">
+                                    <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                        <span className="bg-purple-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm">3</span>
+                                        Refresh This Page
+                                    </h3>
+                                    <p className="text-gray-700 ml-8">
+                                        Once Ollama is running, refresh this page and you're ready to go!
+                                    </p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={checkOllamaConnection}
+                                className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                            >
+                                Check Connection Again
+                            </button>
+
+                            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                                <h4 className="font-semibold text-gray-900 mb-2">Why Ollama?</h4>
+                                <ul className="text-sm text-gray-600 space-y-1">
+                                    <li>✅ 100% Free - no API costs</li>
+                                    <li>✅ Private - all data stays on your computer</li>
+                                    <li>✅ Offline - works without internet</li>
+                                    <li>✅ Fast - runs locally on your hardware</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (ollamaStatus === 'checking') {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+                        <div className="text-center">
+                            <Loader2 />
+                            <p className="text-gray-600 mt-4">Checking Ollama connection...</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+                    <div className="max-w-6xl mx-auto p-6">
+                        <div className="text-center mb-8">
+                            <div className="flex items-center justify-center gap-3 mb-3">
+                                <div className="w-10 h-10 text-blue-600"><TrendingUp /></div>
+                                <h1 className="text-4xl font-bold text-gray-900">AI Sales Research Assistant</h1>
+                            </div>
+                            <p className="text-gray-600 text-lg">100% Free • Runs Locally • No API Costs</p>
+                            
+                            <div className="flex items-center justify-center gap-2 mt-3">
+                                <div className="flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm">
+                                    <CheckCircle />
+                                    <span>Ollama Connected</span>
+                                </div>
+                                <select 
+                                    value={selectedModel}
+                                    onChange={(e) => setSelectedModel(e.target.value)}
+                                    className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                                >
+                                    {availableModels.map(model => (
+                                        <option key={model.name} value={model.name}>
+                                            {model.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2 mb-6 bg-white p-2 rounded-xl shadow-sm">
+                            <button
+                                onClick={() => setActiveTab('prospect')}
+                                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
+                                    activeTab === 'prospect'
+                                        ? 'bg-blue-600 text-white shadow-md'
+                                        : 'text-gray-600 hover:bg-gray-100'
+                                }`}
+                            >
+                                <Building2 />
+                                Prospect Research
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('email')}
+                                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
+                                    activeTab === 'email'
+                                        ? 'bg-blue-600 text-white shadow-md'
+                                        : 'text-gray-600 hover:bg-gray-100'
+                                }`}
+                            >
+                                <Mail />
+                                Email Drafting
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('competitive')}
+                                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all ${
+                                    activeTab === 'competitive'
+                                        ? 'bg-blue-600 text-white shadow-md'
+                                        : 'text-gray-600 hover:bg-gray-100'
+                                }`}
+                            >
+                                <Users />
+                                Competitive Analysis
+                            </button>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-white rounded-xl shadow-lg p-6">
+                                <h2 className="text-xl font-bold text-gray-900 mb-4">
+                                    {activeTab === 'prospect' && 'Company Research'}
+                                    {activeTab === 'email' && 'Email Generator'}
+                                    {activeTab === 'competitive' && 'Competitive Intelligence'}
+                                </h2>
+
+                                {activeTab === 'prospect' && (
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Company Name *</label>
+                                            <input
+                                                type="text"
+                                                value={companyName}
+                                                onChange={(e) => setCompanyName(e.target.value)}
+                                                placeholder="e.g., Acme Corp"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Company Website (Optional)</label>
+                                            <input
+                                                type="text"
+                                                value={companyUrl}
+                                                onChange={(e) => setCompanyUrl(e.target.value)}
+                                                placeholder="e.g., https://example.com"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                        <button
+                                            onClick={handleProspectResearch}
+                                            disabled={loading}
+                                            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            {loading ? <><Loader2 /> Researching...</> : <><Search /> Research Company</>}
+                                        </button>
+                                    </div>
+                                )}
+
+                                {activeTab === 'email' && (
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Prospect Information *</label>
+                                            <textarea
+                                                value={prospectInfo}
+                                                onChange={(e) => setProspectInfo(e.target.value)}
+                                                placeholder="e.g., John Smith, VP of Sales at TechCo, recently expanded to APAC market"
+                                                rows={3}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Email Purpose *</label>
+                                            <input
+                                                type="text"
+                                                value={emailPurpose}
+                                                onChange={(e) => setEmailPurpose(e.target.value)}
+                                                placeholder="e.g., Cold outreach, follow-up, demo request"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Your Product/Service (Optional)</label>
+                                            <textarea
+                                                value={productService}
+                                                onChange={(e) => setProductService(e.target.value)}
+                                                placeholder="e.g., CRM software that helps sales teams increase productivity by 40%"
+                                                rows={2}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                        <button
+                                            onClick={handleEmailDraft}
+                                            disabled={loading}
+                                            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            {loading ? <><Loader2 /> Drafting...</> : <><Mail /> Generate Email</>}
+                                        </button>
+                                    </div>
+                                )}
+
+                                {activeTab === 'competitive' && (
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Your Product/Service *</label>
+                                            <textarea
+                                                value={yourProduct}
+                                                onChange={(e) => setYourProduct(e.target.value)}
+                                                placeholder="e.g., AI-powered sales intelligence platform"
+                                                rows={2}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Competitors *</label>
+                                            <textarea
+                                                value={competitors}
+                                                onChange={(e) => setCompetitors(e.target.value)}
+                                                placeholder="e.g., Salesforce, HubSpot, ZoomInfo"
+                                                rows={3}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                        <button
+                                            onClick={handleCompetitiveAnalysis}
+                                            disabled={loading}
+                                            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            {loading ? <><Loader2 /> Analyzing...</> : <><Users /> Analyze Competition</>}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="bg-white rounded-xl shadow-lg p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-xl font-bold text-gray-900">Results</h2>
+                                    {result && (
+                                        <button
+                                            onClick={copyToClipboard}
+                                            className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                                        >
+                                            <FileText /> Copy
+                                        </button>
+                                    )}
+                                </div>
+
+                                {error && (
+                                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+                                        {error}
+                                    </div>
+                                )}
+
+                                {!result && !loading && !error && (
+                                    <div className="text-center py-12 text-gray-400">
+                                        <div className="w-16 h-16 mx-auto mb-4 opacity-50"><FileText /></div>
+                                        <p>Fill out the form and click the button to generate insights</p>
+                                    </div>
+                                )}
+
+                                {loading && (
+                                    <div className="text-center py-12">
+                                        <Loader2 />
+                                        <p className="text-gray-600 mt-4">Generating response locally...</p>
+                                    </div>
+                                )}
+
+                                {result && (
+                                    <div className="bg-gray-50 rounded-lg p-4 whitespace-pre-wrap text-gray-800 text-sm leading-relaxed max-h-[600px] overflow-y-auto">
+                                        {result}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="mt-8 grid md:grid-cols-3 gap-4">
+                            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                                <div className="text-green-600 mb-2"><DollarSign /></div>
+                                <h3 className="font-semibold text-gray-900 mb-1">100% Free</h3>
+                                <p className="text-sm text-gray-600">No API costs or subscription fees</p>
+                            </div>
+                            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                                <div className="text-blue-600 mb-2 w-8 h-8"><Search /></div>
+                                <h3 className="font-semibold text-gray-900 mb-1">Completely Private</h3>
+                                <p className="text-sm text-gray-600">All data stays on your computer</p>
+                            </div>
+                            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                                <div className="text-purple-600 mb-2 w-8 h-8"><TrendingUp /></div>
+                                <h3 className="font-semibold text-gray-900 mb-1">Works Offline</h3>
+                                <p className="text-sm text-gray-600">No internet connection needed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<SalesResearchTool />, document.getElementById('root'));
+    </script>
+</body>
+</html>
