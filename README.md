@@ -52,14 +52,15 @@ Open your terminal and run:
     ollama pull llama3.2
 
 ### 3. Launch the Tool
-Download sales-tool.html.
+Download `sales-tool.html`.
 
 Double-click to open in any modern browser.
 
 Optional: To prevent CORS issues in some environments, serve via Python:
-    ```bash
-     python -m http.server 8000
-Navigate to http://localhost:8000.
+     
+`python -m http.server 8000`
+     
+Navigate to `http://localhost:8000`.
 
 ---
 
