@@ -1,145 +1,83 @@
 # 🔍 AI Sales Research Assistant - Local (Ollama)
 
-#### A fully local, 100% free AI-powered sales intelligence tool that runs entirely on your computer using Ollama. No API costs, no data privacy concerns.
+[![Ollama](https://img.shields.io/badge/LLM-Ollama-orange)](https://ollama.ai/)
+[![Status](https://img.shields.io/badge/Status-Functional_PoC-brightgreen)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-# ✨ Key Features
-🤖 100% Local AI - Runs completely on your computer using Ollama
+**A high-performance, 100% private sales intelligence suite that runs entirely on your local hardware. No API costs, no cloud data leaks, and zero subscriptions.**
 
-💰 Zero Costs - No API fees, no subscriptions, forever free
+---
 
-🔒 Complete Privacy - All data stays on your machine
+## 🎯 The "PoC-to-Production" Bridge
 
-🌐 Works Offline - No internet connection required after setup
+Most AI sales tools require expensive OpenAI/Claude API keys and send your sensitive prospect data to the cloud. This assistant bridges that gap by using a **Client-Side Orchestration** model:
 
-🎯 Three Sales Tools:
+* **🛡️ Data Sovereignty**: Unlike cloud-based SaaS, your prospect lists and talk tracks never leave your local machine.
+* **⚡ Zero-Latency UI**: Built as a single-file React/Tailwind app that communicates directly with the Ollama local host.
+* **🧠 Heuristic Prompting**: Engineered specifically for `Llama 3.2`, providing structured outputs for competitive battle cards and email outreach without "hallucination noise."
 
-Company Research - Get detailed prospect intelligence
+---
 
-Email Generator - Craft personalized sales emails
-
-Competitive Analysis - Create battle cards and talk tracks
-
-📱 Modern UI - Beautiful, responsive interface with Tailwind CSS
-
-⚡ Fast & Lightweight - Single HTML file, no backend needed
-
-# 🎯 Who Is This For?
-Sales Professionals researching prospects and competitors
-
-Entrepreneurs creating personalized outreach campaigns
-
-Marketing Teams analyzing competitive landscapes
-
-Startups building sales enablement tools without budget
-
-Anyone who values privacy and wants AI without subscriptions
-
-# 🚀 Quick Start
-## Prerequisites
-Modern web browser (Chrome, Edge, Firefox)
-
-Ollama installed on your computer
-
-At least 8GB RAM (for running AI models)
-
-## Installation (3 Easy Steps)
-### 1. Install Ollama
-Download from ollama.ai
-
-Available for Windows, Mac, and Linux
-### 2. Download from ollama.ai
-#### Open terminal/command prompt and run:
-ollama pull llama3.2
+## 🏗️ Technical Architecture
 
 
-### 3. Run the Application
 
-Download sales-tool.html
+The tool uses a **Local Inference Loop**:
+1.  **Frontend**: A standalone HTML/React file (Tailwind CSS for UI).
+2.  **Bridge**: Fetch API calls directed to `http://localhost:11434/api/generate`.
+3.  **Engine**: Ollama running as a background service, managing model weights and inference.
 
-Double-click to open in your browser
+---
 
-Or serve with a local server:
+## ✨ Key Features
 
-#### Python 3
-python -m http.server 8000
+| Feature | Description |
+| :--- | :--- |
+| **🤖 100% Local AI** | Powered by Ollama; no data is ever uploaded to a third party. |
+| **💰 Zero Costs** | No monthly subscription fees or token-based billing. |
+| **🌐 Offline Mode** | Research and write emails on a plane or in remote areas—no internet required. |
+| **🎯 Triple Threat** | Dedicated modules for **Company Research**, **Email Personalization**, and **Competitive Analysis**. |
 
-# 📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+---
 
-You are free to:
+## 🚀 Quick Start
 
-Use commercially
+### 1. Prerequisites
+- **Ollama Installed** ([Download here](https://ollama.com))
+- **8GB+ RAM** (Recommended for Llama 3.2)
 
-Modify and distribute
+### 2. Setup the Model
+Open your terminal and run:
+    ```bash
+    ollama pull llama3.2
 
-Use privately
+### 3. Launch the Tool
+Download sales-tool.html.
 
-Sublicense
+Double-click to open in any modern browser.
 
-Place warranty
+Optional: To prevent CORS issues in some environments, serve via Python:
+    ```bash
+     python -m http.server 8000
+Navigate to http://localhost:8000.
 
-Under the conditions:
+---
 
-Include original copyright notice
+## 📊 Comparison: Local vs. Cloud AI
 
-Include license copy in distributions
+| Metric | Local Assistant | Commercial AI (SaaS) |
+| :--- | :--- | :--- |
+| **💰 Monthly Cost** | **$0 (Free)** | $20 - $600+ / month |
+| **🔒 Data Privacy** | **100% Secure** (Stays on Disk) | Data processed on 3rd party servers |
+| **🌐 Internet Required** | **No** (Works offline) | Yes (Always required) |
+| **🛠️ Customization** | Full control over system prompts | Restricted by provider filters |
+| **🚀 Speed** | Hardware dependent | Subject to server congestion |
 
-# 🙏 Acknowledgments
-Ollama - For making local AI accessible
+---
 
-Meta - For the Llama models
+## 📄 License
+Distributed under the MIT License. 
 
-Tailwind CSS - For the beautiful UI framework
+Developed by [David Kok] – Private, powerful, and local sales enablement.
 
-React - For the component architecture
-
-Open Source Community - For making all this possible
-
-# 📞 Support & Community
-Issues: GitHub Issues
-
-Discussions: GitHub Discussions
-
-Contributing: See CONTRIBUTING.md
-
-Email: support@example.com
-
-Getting Help
-Check the Troubleshooting section
-
-Search existing issues
-
-Create a new issue with details about your problem
-
-Join community discussions for tips and tricks
-
-# ⭐ Love this tool? Give it a star on GitHub! ⭐
-
-https://img.shields.io/github/stars/yourusername/sales-research-assistant?style=social
-https://img.shields.io/github/forks/yourusername/sales-research-assistant?style=social
-https://img.shields.io/github/issues/yourusername/sales-research-assistant
-
-# 🚀 Quick Recap
-Why choose this tool over ChatGPT/Claude?
-
-✅ Privacy: Your sales data never leaves your computer
-
-✅ Cost: $0 vs $20-600/month for commercial AI tools
-
-✅ Customization: Modify prompts for your exact needs
-
-✅ Offline: Work anywhere, anytime - no internet needed
-
-✅ Ownership: You control everything
-
-### Setup in 3 minutes:
-
-Install Ollama
-
-Download a model: ollama pull llama3.2
-
-Open sales-tool.html
-
-Start closing more deals today with AI-powered sales intelligence! 🎯
-
-Disclaimer: This tool is for sales enablement purposes only. Always verify AI-generated information before using in business communications.
+## ⭐ Love this tool? Give it a star on GitHub! ⭐
